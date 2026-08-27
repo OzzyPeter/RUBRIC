@@ -27,7 +27,15 @@ while True:
     match choice:
 
         case "1":
-            lecturer.create_course()
+
+            x = "yes"
+
+            while x != "no":
+                lecturer.create_course()
+                x = input("Do you still want to create course?(yes/no): ").lower()
+
+            print("Updated")
+
 
         case "2":
             if not lecturer.courses:
@@ -39,14 +47,12 @@ while True:
             for course in lecturer.courses:
                 print(f"- {course.course_code}: {course.course_name}")
 
-            course_code = input(
-                "\nSelect course to create assignment: "
-            ).upper()
+            course_code = input("\nSelect course to create assignment: ").lower()
 
             selected_course = None
 
             for course in lecturer.courses:
-                if course.course_code == course_code:
+                if course.course_code == course_code or course.course_name == course_code:
                     selected_course = course
                     break
 
@@ -54,16 +60,16 @@ while True:
                 print("Course does not exist.")
                 continue
 
-            title = input("Assignment title: ")
-            description = input("Assignment description: ")
-            deadline = input("Assignment deadline: ")
+            x = "yes"
 
-            Assignment(
-                title,
-                description,
-                deadline,
-                selected_course
-            )
+            while x != "no":
+                            
+                lecturer.create_assignment(selected_course)
+                            
+                x = input("Do you still want to create assignment for this course?(yes/no): ").lower()
+
+
+            print(lecturer.assignments)
 
             print("Assignment created successfully.")
 

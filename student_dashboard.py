@@ -1,4 +1,5 @@
-from people import Lecturer, Student, Assignment, Course
+from people import Student, Lecturer
+
 
 print("""
 =================
@@ -6,55 +7,92 @@ STUDENT DASHBOARD
 =================
 """)
 
+
+# Temporary student for testing.
+# Later, login() will provide these details.
+student = Student(
+    "Student Name",
+    "MAT123456"
+)
+
+
 while True:
+
     print("""
-1. Join course
+1. Join Course
 2. View Assignments
 3. Submit Assignment
 4. Resubmit Assignment
 5. See Submission Status
 6. View Grades
+7. Exit
 """)
 
     choice = input("Input choice: ")
 
-    student = Student("from login name", "from matric number(login)")
-    course1 = Course("from login")
-
-    joined_courses = []
-
     match choice:
-     
+
         case "1":
-            course = input("Input course to join: ").lower()
 
-            if course in Lecturer.courses:
+            course_code = input(
+                "Input course code: "
+            ).upper()
 
-                course1.join_course()
+            selected_course = None
 
-                joined_courses.append(course)
+            # Temporary:
+            # Search through lecturers and their courses.
+            # Later, the database will handle this.
+            for lecturer in Lecturer.all_lecturers:
+                for course in lecturer.courses:
+
+                    if course.course_code == course_code:
+                        selected_course = course
+                        break
+
+                if selected_course:
+                    break
+
+            if selected_course:
+
+                student.join_course(selected_course)
 
             else:
-                print(f"{course} does not exist")
-                
+                print(
+                    f"{course_code} does not exist."
+                )
 
         case "2":
-            course = input("Input course to view assignment: ").lower()
 
-            if course in joined_courses:
-                student.view_assignments()
+            if not student.courses:
+                print(
+                    "You haven't joined any courses."
+                )
+                continue
 
-                if student.view_assignments() == []:
-                    print("No assignments available for this course")
-                
-            else:
-                print("You haven't joined this course")
+            student.view_assignments()
 
         case "3":
-            pass
+
+            student.submit_assignment()
 
         case "4":
+
             pass
 
         case "5":
-            pass
+
+            student.see_submission_status()
+
+        case "6":
+
+            student.view_grades()
+
+        case "7":
+
+            print("Exiting student dashboard...")
+            break
+
+        case _:
+
+            print("Invalid choice.")
