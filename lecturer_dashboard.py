@@ -1,119 +1,117 @@
-from people import Lecturer, Assignment
+from fastapi import APIRouter, HTTPException
 
+from people import Lecturer
+from models import CourseRequest, AssignmentRequest, GradeRequest
 
-print("==================")
-print("LECTURER DASHBOARD")
-print("==================")
-
+router = APIRouter(prefix="/lecturer-dashboard")
 
 lecturer = Lecturer("Adebisi")
 
 
-while True:
-
-    print("""
-1. Create Course
-2. Create Assignment
-3. View Students
-4. View Submissions
-5. Grade Assignment
-6. AI Assisted Grading
-7. Release Grades
-8. Exit
-""")
-
-    choice = input("Input choice: ")
-
-    match choice:
-
-        case "1":
-
-            x = "yes"
-
-            while x != "no":
-                lecturer.create_course()
-                x = input("Do you still want to create course?(yes/no): ").lower()
-
-            print("Updated")
+def find_course(course_code):
+    for course in lecturer.courses:
+        if course.course_code == course_code:
+            return course
+    return None
 
 
-        case "2":
-            if not lecturer.courses:
-                print("You haven't created any courses yet.")
-                continue
-
-            print("\nYour courses:")
-
-            for course in lecturer.courses:
-                print(f"- {course.course_code}: {course.course_name}")
-
-            course_code = input("\nSelect course to create assignment: ").lower()
-
-            selected_course = None
-
-            for course in lecturer.courses:
-                if course.course_code == course_code or course.course_name == course_code:
-                    selected_course = course
-                    break
-
-            if selected_course is None:
-                print("Course does not exist.")
-                continue
-
-            x = "yes"
-
-            while x != "no":
-                            
-                lecturer.create_assignment(selected_course)
-                            
-                x = input("Do you still want to create assignment for this course?(yes/no): ").lower()
+def find_assignment(course, title):
+    for assignment in course.assignments:
+        if assignment.title == title:
+            return assignment
+    return None
 
 
-            print(lecturer.assignments)
+@router.get("")
+def dashboard():
+    return {"message": "LECTURER DASHBOARD"}
 
-            print("Assignment created successfully.")
 
-        case "3":
-            if not lecturer.courses:
-                print("You haven't created any courses yet.")
-                continue
+@router.post("/create-course")
+def create_course(data: CourseRequest):
+    if find_course(data.course_code):
+        raise HTTPException(status_code=400, detail="Course already exists")
 
-            print("\nYour courses:")
+    course = lecturer.create_course(
+        data.course_code,
+        data.course_name
+    )
 
-            for course in lecturer.courses:
-                print(f"- {course.course_code}: {course.course_name}")
+    return {
+        "message": f"{course.course_code} created successfully"
+    }
 
-            course_code = input(
-                "\nSelect course to view students: "
-            ).upper()
 
-            selected_course = None
+@router.post("/create-assignment")
+def create_assignment(data: AssignmentRequest):
+    selected_course = find_course(data.course_code)
 
-            for course in lecturer.courses:
-                if course.course_code == course_code:
-                    selected_course = course
-                    break
+    if selected_course is None:
+        raise HTTPException(status_code=404, detail="Course does not exist")
 
-            if selected_course:
-                lecturer.view_students(selected_course)
-            else:
-                print("Course does not exist.")
+    assignment = lecturer.create_assignment(
+        selected_course,
+        data.title,
+        data.description,
+        data.deadline
+    )
 
-        case "4":
-            pass
+    return {
+        "message": "Assignment created successfully",
+        "assignment": assignment.title
+    }
 
-        case "5":
-            pass
 
-        case "6":
-            pass
+@router.get("/students/{course_code}")
+def view_students(course_code: str):
+    course = find_course(course_code)
 
-        case "7":
-            pass
+    if course is None:
+        raise HTTPException(status_code=404, detail="Course does not exist")
 
-        case "8":
-            print("Exiting lecturer dashboard...")
+    return lecturer.view_students(course)
+
+
+@router.get("/submissions/{course_code}/{assignment_title}")
+def view_submissions(course_code: str, assignment_title: str):
+    course = find_course(course_code)
+
+    if course is None:
+        raise HTTPException(status_code=404, detail="Course does not exist")
+
+    assignment = find_assignment(course, assignment_title)
+
+    if assignment is None:
+        raise HTTPException(status_code=404, detail="Assignment does not exist")
+
+    return lecturer.view_submissions(assignment)
+
+
+@router.post("/grade")
+def grade_submission(data: GradeRequest):
+    course = find_course(data.course_code)
+
+    if course is None:
+        raise HTTPException(status_code=404, detail="Course does not exist")
+
+    assignment = find_assignment(course, data.assignment_title)
+
+    if assignment is None:
+        raise HTTPException(status_code=404, detail="Assignment does not exist")
+
+    submission = None
+    for s in assignment.submissions:
+        if s.student.matricno == data.matricno:
+            submission = s
             break
 
-        case _:
-            print("Invalid choice.")
+    if submission is None:
+        raise HTTPException(status_code=404, detail="Submission not found for this student")
+
+    lecturer.grade_manually(submission, data.grade, data.feedback)
+
+    return {
+        "message": "Grade recorded successfully",
+        "grade": submission.grade,
+        "feedback": submission.feedback
+    }

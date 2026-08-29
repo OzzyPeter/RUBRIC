@@ -1,98 +1,99 @@
+from fastapi import APIRouter, HTTPException
+
 from people import Student, Lecturer
+from models import JoinCourseRequest, SubmitAssignmentRequest
+
+router = APIRouter(prefix="/student-dashboard")
 
 
-print("""
-=================
-STUDENT DASHBOARD
-=================
-""")
+def get_or_create_student(matricno, name):
+    if matricno in Student.all_students:
+        return Student.all_students[matricno]
+    return Student(name, matricno)
 
 
-# Temporary student for testing.
-# Later, login() will provide these details.
-student = Student(
-    "Student Name",
-    "MAT123456"
-)
+def find_course_anywhere(course_code):
+    for lecturer in Lecturer.all_lecturers:
+        for course in lecturer.courses:
+            if course.course_code == course_code:
+                return course
+    return None
 
 
-while True:
+@router.get("")
+def dashboard():
+    return {"message": "STUDENT DASHBOARD"}
 
-    print("""
-1. Join Course
-2. View Assignments
-3. Submit Assignment
-4. Resubmit Assignment
-5. See Submission Status
-6. View Grades
-7. Exit
-""")
 
-    choice = input("Input choice: ")
+@router.post("/join-course")
+def join_course(data: JoinCourseRequest):
+    course = find_course_anywhere(data.course_code)
 
-    match choice:
+    if course is None:
+        raise HTTPException(status_code=404, detail=f"{data.course_code} does not exist")
 
-        case "1":
+    student = get_or_create_student(data.matricno, data.name)
 
-            course_code = input(
-                "Input course code: "
-            ).upper()
+    return student.join_course(course)
 
-            selected_course = None
 
-            # Temporary:
-            # Search through lecturers and their courses.
-            # Later, the database will handle this.
-            for lecturer in Lecturer.all_lecturers:
-                for course in lecturer.courses:
+@router.get("/assignments/{matricno}")
+def view_assignments(matricno: str):
+    student = Student.all_students.get(matricno)
 
-                    if course.course_code == course_code:
-                        selected_course = course
-                        break
+    if student is None:
+        raise HTTPException(status_code=404, detail="Student not found")
 
-                if selected_course:
-                    break
+    if not student.courses:
+        return {"message": "You haven't joined any courses."}
 
-            if selected_course:
+    return student.view_assignments()
 
-                student.join_course(selected_course)
 
-            else:
-                print(
-                    f"{course_code} does not exist."
-                )
+@router.post("/submit-assignment")
+def submit_assignment(data: SubmitAssignmentRequest):
+    student = Student.all_students.get(data.matricno)
 
-        case "2":
+    if student is None:
+        raise HTTPException(status_code=404, detail="Student not found. Join a course first.")
 
-            if not student.courses:
-                print(
-                    "You haven't joined any courses."
-                )
-                continue
+    course = find_course_anywhere(data.course_code)
 
-            student.view_assignments()
+    if course is None:
+        raise HTTPException(status_code=404, detail="Course does not exist")
 
-        case "3":
-
-            student.submit_assignment()
-
-        case "4":
-
-            pass
-
-        case "5":
-
-            student.see_submission_status()
-
-        case "6":
-
-            student.view_grades()
-
-        case "7":
-
-            print("Exiting student dashboard...")
+    assignment = None
+    for a in course.assignments:
+        if a.title == data.assignment_title:
+            assignment = a
             break
 
-        case _:
+    if assignment is None:
+        raise HTTPException(status_code=404, detail="Assignment does not exist")
 
-            print("Invalid choice.")
+    submission = student.submit_assignment(assignment, data.file)
+
+    return {
+        "message": "Assignment submitted successfully",
+        "status": submission.status
+    }
+
+
+@router.get("/submission-status/{matricno}")
+def submission_status(matricno: str):
+    student = Student.all_students.get(matricno)
+
+    if student is None:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    return student.see_submission_status()
+
+
+@router.get("/grades/{matricno}")
+def view_grades(matricno: str):
+    student = Student.all_students.get(matricno)
+
+    if student is None:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    return student.view_grades()

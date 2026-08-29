@@ -2,12 +2,12 @@ class People:
     def __init__(self, name):
         self.name = name
 
-    def create_account(self):
-        pass
 
-    def login(self):
-        pass
+def create_account(self):
+    pass
 
+def login(self):
+    pass
 
 class Student(People):
     def __init__(self, name, matricno):
@@ -16,37 +16,62 @@ class Student(People):
         self.courses = []
         self.submissions = []
 
-    def join_course(self, course):
-        if course not in self.courses:
-            self.courses.append(course)
-            course.students.append(self)
-            print(f"You have joined {course.course_code}")
-        else:
-            print("You are already enrolled in this course.")
+def join_course(self, course):
+    if course not in self.courses:
+        self.courses.append(course)
+        course.students.append(self)
 
-    def view_assignments(self):
-        for course in self.courses:
-            print(f"\nAssignments for {course.course_code} - {course.course_name}")
+        return {
+            "message": f"You have joined {course.course_code}"
+        }
 
-            if not course.assignments:
-                print("No assignments available.")
-                continue
+    return {
+        "message": "You are already enrolled in this course."
+    }
 
-            for assignment in course.assignments:
-                print(f"Title: {assignment.title}")
-                print(f"Description: {assignment.description}")
-                print(f"Deadline: {assignment.deadline}")
-                print()
+def view_assignments(self):
+    assignments = []
 
-    def submit_assignment(self):
-        pass
+    for course in self.courses:
+        for assignment in course.assignments:
+            assignments.append({
+                "course_code": course.course_code,
+                "course_name": course.course_name,
+                "title": assignment.title,
+                "description": assignment.description,
+                "deadline": assignment.deadline
+            })
 
-    def see_submission_status(self):
-        pass
+    return assignments
 
-    def view_grades(self):
-        pass
+def submit_assignment(self, assignment, file):
+    submission = Submission(
+        student=self,
+        assignment=assignment,
+        file=file
+    )
 
+    return submission
+
+def see_submission_status(self):
+    return [
+        {
+            "assignment": submission.assignment.title,
+            "status": submission.status
+        }
+        for submission in self.submissions
+    ]
+
+def view_grades(self):
+    return [
+        {
+            "assignment": submission.assignment.title,
+            "grade": submission.grade,
+            "feedback": submission.feedback
+        }
+        for submission in self.submissions
+        if submission.grade is not None
+    ]
 
 class Lecturer(People):
     def __init__(self, name):
@@ -54,52 +79,62 @@ class Lecturer(People):
         self.courses = []
         self.assignments = []
 
-    def create_course(self):
-        course_code = input("Course code: ")
-        course_name = input("Course name: ")
+def create_course(self, course_code, course_name):
+    course = Course(
+        course_code=course_code,
+        course_name=course_name,
+        lecturer=self
+    )
 
-        course = Course(course_code, course_name, self)
-        self.courses.append(course)
+    self.courses.append(course)
 
-        print(f"{course_code} created successfully.")
+    return course
 
-    def create_assignment(self, course):
-        self.course = course
-        self.title = input("Assignment title: ")
-        self.description = input("Assignment description: ")
-        self.deadline = input("Assignment deadline: ")
-        
-        assignment = Assignment(self.title, self.description, self.deadline, self.course)
-        self.assignments.append(assignment)
+def create_assignment(
+    self,
+    course,
+    title,
+    description,
+    deadline
+):
+    assignment = Assignment(
+        title=title,
+        description=description,
+        deadline=deadline,
+        course=course
+    )
 
+    self.assignments.append(assignment)
+    course.assignments.append(assignment)
 
-    def view_students(self, course):
-        print(f"\nStudents enrolled in {course.course_code}:")
+    return assignment
 
-        if not course.students:
-            print("No students enrolled.")
-            return
+def view_students(self, course):
+    return [
+        {
+            "name": student.name,
+            "matricno": student.matricno
+        }
+        for student in course.students
+    ]
 
-        for student in course.students:
-            print(f"- {student.name} ({student.matricno})")
+def set_submission_requirements(self):
+    pass
 
-    def set_submission_requirements(self):
-        pass
+def view_submissions(self):
+    pass
 
-    def view_submissions(self):
-        pass
+def grade_manually(self):
+    pass
 
-    def grade_manually(self):
-        pass
+def ai_assisted_grading(self):
+    pass
 
-    def ai_assisted_grading(self):
-        pass
+def review_ai_grades(self):
+    pass
 
-    def review_ai_grades(self):
-        pass
-
-    def release_grades(self):
-        pass
+def release_grades(self):
+    pass
 
 
 class Course:
@@ -107,20 +142,18 @@ class Course:
         self.course_code = course_code
         self.course_name = course_name
         self.lecturer = lecturer
-
+        
         self.students = []
         self.assignments = []
 
-
 class Assignment:
     def __init__(self, title, description, deadline, course):
-        self.submissions = []
-        self.assignments = []
-
         self.title = title
         self.description = description
         self.deadline = deadline
         self.course = course
+
+        self.submissions = []
 
 class Submission:
     def __init__(self, student, assignment, file):
@@ -133,3 +166,4 @@ class Submission:
 
         assignment.submissions.append(self)
         student.submissions.append(self)
+
