@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+python-dotenv
+bcrypt
+pydantic[email]
+google-genai
+python-multipart

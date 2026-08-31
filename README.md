@@ -1,83 +1,220 @@
 # RUBRIC
 
-RUBRIC is an academic assignment management system designed to make it easier for lecturers to create courses and assignments, manage submissions, and grade students.
+## AI-Powered Assignment Submission and Grading Platform
 
-The project is currently being built from the ground up, starting with the core Python logic before introducing a database and backend framework.
+**RUBRIC** is a web-based assignment submission and grading platform designed to make the assignment workflow easier for both students and lecturers.
 
-## Current Stage
+The platform allows lecturers to create and manage assignments while students can submit their work through a centralized system. RUBRIC is also being designed to support AI-assisted grading, allowing lecturers to receive automated grading assistance based on assignment requirements and uploaded learning materials.
 
-The current version focuses on the basic object-oriented structure of the system using Python.
+> 🚧 **Project Status: In Development**
+>
+> RUBRIC is currently under active development. The core backend and database structure are being built, and additional features are still being implemented.
 
-### Current Features
+---
 
-* Student and Lecturer classes
-* Student inheritance from the base `People` class
-* Lecturer inheritance from the base `People` class
-* Course creation
-* Student course enrollment
-* Student lists for individual courses
-* Assignment creation
-* Assignment management
-* Basic submission structure
-* Basic grading structure
+## The Problem
 
-## Planned Features
+Managing assignments can involve multiple platforms and manual processes. Students may submit assignments through email, messaging platforms, or forms, while lecturers must manually organize submissions and grade them.
 
-* User account creation and authentication
-* Student login
-* Lecturer login
-* Course management
-* Assignment submission
-* Assignment resubmission
-* Submission status tracking
-* Manual grading
-* AI-assisted grading
-* AI grade review
-* Grade release
-* Database integration
-* REST API
-* Automated testing
+RUBRIC aims to provide a centralized platform where:
+
+* Lecturers can create and manage assignments.
+* Students can view and submit assignments.
+* Submissions can be organized and managed in one place.
+* Lecturers can manually grade student submissions.
+* AI-assisted grading can help provide feedback and evaluate assignments.
+
+---
+
+## Features
+
+### Currently Implemented / In Development
+
+* User account structure for students and lecturers.
+* Student and lecturer roles.
+* Course management.
+* Assignment creation and management.
+* Assignment submission structure.
+* FastAPI backend.
+* PostgreSQL database integration.
+* SQLAlchemy ORM for database operations.
+* API request and response handling.
+* Backend project structure using Python and object-oriented programming principles.
+
+### Planned Features
+
+* User authentication and authorization.
+* Secure password hashing.
+* JWT authentication.
+* Student assignment submission.
+* Lecturer assignment grading.
+* Manual grading and feedback.
+* AI-assisted assignment grading.
+* Multiple AI grading strictness levels.
+* Uploading learning materials to provide context for AI grading.
+* AI-generated feedback for student submissions.
+* AI-generated assignment analysis.
+* Detection tools to help lecturers identify potentially AI-generated submissions.
+* Frontend integration.
+* Improved validation and error handling.
+
+---
 
 ## Tech Stack
 
-### Current
+### Backend
 
 * Python
-* Object-Oriented Programming
-
-### Planned
-
 * FastAPI
+* SQLAlchemy
 * PostgreSQL
-* SQL
-* REST API
-* AI-assisted grading
+
+### Database
+
+* PostgreSQL
+* SQLAlchemy ORM
+
+### Planned / Additional Technologies
+
+* React
+* JavaScript
+* HTML
+* CSS
+* AI APIs for grading and feedback
+* JWT Authentication
+
+---
 
 ## Project Structure
 
 ```text
 RUBRIC/
 │
-├── people.py
-├── lecturer_dashboard.py
-├── students_dashboard.py
-└── README.md
+├── app/
+│   ├── main.py
+│   ├── models/
+│   ├── schemas/
+│   ├── routes/
+│   ├── services/
+│   └── database/
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
 ```
 
-## Project Goal
+> The project structure may change as development continues.
 
-The goal of RUBRIC is to build a complete assignment and grading system while applying software engineering concepts such as object-oriented programming, data modelling, authentication, database management, API development, and automated testing.
+---
 
-## Development Approach
+## Installation
 
-The project is being developed incrementally.
+### 1. Clone the repository
 
-The initial implementation focuses on understanding and building the core Python logic before introducing additional technologies such as databases and APIs.
+```bash
+git clone <your-repository-url>
+```
 
-Each major stage of development will be committed separately to maintain a clear development history.
+### 2. Navigate into the project directory
 
-## Status
+```bash
+cd RUBRIC
+```
 
-🚧 **In Development**
+### 3. Create a virtual environment
 
-This project is currently in its initial Python/OOP stage.
+```bash
+python -m venv venv
+```
+
+### 4. Activate the virtual environment
+
+**Windows:**
+
+```bash
+venv\Scripts\activate
+```
+
+**macOS/Linux:**
+
+```bash
+source venv/bin/activate
+```
+
+### 5. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 6. Configure the database
+
+Create a PostgreSQL database and configure your database connection using environment variables or your project's configuration settings.
+
+### 7. Run the FastAPI application
+
+```bash
+uvicorn app.main:app --reload
+```
+
+The API should then be available locally.
+
+FastAPI's interactive API documentation can typically be accessed at:
+
+```text
+/docs
+```
+
+---
+
+## Current Development Progress
+
+The project has progressed beyond the initial planning stage.
+
+The backend architecture and core system concepts have been implemented using FastAPI, PostgreSQL, SQL, and SQLAlchemy. Current development is focused on expanding the application's functionality, connecting the different components of the system, and implementing authentication, assignment workflows, and grading features.
+
+---
+
+## Future Improvements
+
+* Complete the authentication system.
+* Implement role-based authorization.
+* Complete assignment submission workflows.
+* Implement lecturer grading workflows.
+* Integrate AI-assisted grading.
+* Improve API validation and error handling.
+* Develop and integrate the frontend.
+* Add automated testing.
+* Deploy the application.
+
+---
+
+## Learning Goals
+
+RUBRIC is also a project through which I am strengthening my backend development skills and gaining practical experience with:
+
+* Building REST APIs with FastAPI.
+* Designing backend application architecture.
+* Working with relational databases.
+* Writing SQL queries.
+* Using PostgreSQL.
+* Using SQLAlchemy as an ORM.
+* Designing API request and response models.
+* Applying object-oriented programming concepts.
+* Building real-world backend workflows.
+
+---
+
+## Author
+
+**Ozioma Peter**
+
+Backend Developer focused on building scalable applications using Python, FastAPI, PostgreSQL, and modern backend technologies.
+
+---
+
+## Project Status
+
+🚧 **Actively under development**
+
+RUBRIC is a work in progress, and new features and improvements are continuously being added.
